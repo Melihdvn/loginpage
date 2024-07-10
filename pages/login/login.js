@@ -1,264 +1,353 @@
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, Keyboard, View, Image, TextInput, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, {useState, useEffect} from 'react';
+import {StatusBar} from 'expo-status-bar';
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
+    View,
+    Image,
+    TextInput,
+    Alert,
+} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
 
-const LoginInput = ({ icon, children }) => {
-  return (
-    <View
-      style={{
-        width: "80%",
-        alignItems: "center",
-        flexDirection: "row",
-        borderBottomColor: "red",
-        borderBottomWidth: 1,
-        marginBottom: 16,
-        height: 54,
-        backgroundColor: "#242424"
-      }}
-    >
-      {icon && (
+const LoginInput = ({icon, children}) => {
+    return (
         <View
-          style={{
-            height: "100%",
-            width: 50,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingBottom: 2
-          }}
-        >
-          {icon}
+            style={{
+                width: '80%',
+                alignItems: 'center',
+                flexDirection: 'row',
+                borderBottomColor: 'red',
+                borderBottomWidth: 1,
+                marginBottom: 16,
+                height: 54,
+                backgroundColor: '#242424',
+            }}>
+            {icon && (
+                <View
+                    style={{
+                        height: '100%',
+                        width: 50,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingBottom: 2,
+                    }}>
+                    {icon}
+                </View>
+            )}
+            {children}
         </View>
-      )}
-      {children}
-    </View>
-  );
+    );
 };
 
 export default function Login({navigation}) {
-  const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [selectedOption, setSelectedOption] = useState(0);
-  const [seePassword, setseePasword] = useState(1);
+    const [mail, setMail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const [selectedOption, setSelectedOption] = useState(0);
+    const [seePassword, setSeePassword] = useState(1);
+    const [error, setError] = useState('');
+    const [cooldownCount, setCooldownCount] = useState(0);
+    const [loginTryCounter, setLoginTryCounter] = useState(0);
+    const [loginCorrect, setLoginCorrect] = useState(0);
+    const [loginCorrectTimer, setLoginCorrectTimer] = useState(3);
+    const [intervalId, setIntervalId] = useState(null);
 
-  const checkValid = () => {
-    const correctMail = "melih";
-    const correctPhone = "5335632792"
-    const correctPassword = "sifre";
+    const checkValid = () => {
+        const correctMail = 'melih';
+        const correctPhone = '1';
+        const correctPassword = 'a';
 
-    if(selectedOption === 0)
-    {
-    if (phone === correctPhone && password === correctPassword) {
-      Alert.alert("Login successful");
-      return true;
-      
-    } else {
-      if(phone === ""){
-      Alert.alert("Please enter your phone number.");
-      return false;
-    }
-      if(password === ""){
-      Alert.alert("Please enter your password.");
-      return false;
-    }
-      else{
-      if(phone === correctPhone){ // Database bağlayınca databasede böyle bir kullanıcı var mı bakarız.
-        Alert.alert("Wrong password.");
-        return false;
-      }
-      else
-      Alert.alert("No such user found.");
-      return false;
-    }
-    }
-   }
-   else{
-    if (mail === correctMail && password === correctPassword) {
-      Alert.alert("Login successful");
-      return true;
-    } 
-    else {
-      if(mail === ""){
-      Alert.alert("Please enter your e-mail address.");
-      return false;
-    }
-      if(password === ""){
-      Alert.alert("Please enter your password.")
-      return false;
-    }
-    else{
-      if(phone=== correctMail){
-        Alert.alert("Wrong password.");
-        return false;
-      }
-      else
-      Alert.alert("No such user found.");
-      return false;
-    }
-    }
-   }
-  }
+        if (selectedOption === 0) {
+            if (phone === correctPhone && password === correctPassword) {
+                setError('Login successful');
+                return true;
+            } else {
+                if (phone === '') {
+                    setError('Please enter your phone number.');
+                    return false;
+                }
+                if (password === '') {
+                    setError('Please enter your password.');
+                    return false;
+                } else {
+                    if (phone === correctPhone) {
+                        // Database bağlayınca databasede böyle bir kullanıcı var mı bakarız.
+                        setError('Wrong password.');
+                        return false;
+                    } else setError('No such user found.');
+                    return false;
+                }
+            }
+        } else {
+            if (mail === correctMail && password === correctPassword) {
+                setError('Login successful');
+                return true;
+            } else {
+                if (mail === '') {
+                    setError('Please enter your e-mail address.');
+                    return false;
+                }
+                if (password === '') {
+                    setError('Please enter your password.');
+                    return false;
+                } else {
+                    if (mail === correctMail) {
+                        setError('Wrong password.');
+                        return false;
+                    } else setError('No such user found.');
+                    return false;
+                }
+            }
+        }
+    };
 
-  const handleLogin = () => {
-    valid = checkValid();
+    const handleLogin = () => {
+        const valid = checkValid();
+        if (valid) {
+            setError('');
+            setLoginTryCounter(0);
+            setLoginCorrect(1);
 
-    if (valid) {
-      Alert.alert("Register successful");
-    }
-  };
+            const id = setInterval(() => {
+                setLoginCorrectTimer(prevTimer => prevTimer - 1);
+            }, 1000);
+            setIntervalId(id);
+        } else {
+            setLoginTryCounter(loginTryCounter + 1);
+            if (loginTryCounter >= 2) {
+                setCooldownCount(30);
+                setLoginTryCounter(0);
+            }
+        }
+    };
 
-  const handleRegister = () => {
-    navigation.navigate("Register");
-  };
+    useEffect(() => {
+        if (loginCorrectTimer === 0) {
+            clearInterval(intervalId);
+            navigation.reset({
+                index: 0,
+                routes: [{name: 'Home'}],
+            });
+        }
+    }, [loginCorrectTimer]);
 
-  const guestLogin = () => {
-      Alert.alert("Login successful");
-  };
+    useEffect(() => {
+        var timer;
+        if (cooldownCount > 0) {
+            timer = setTimeout(() => {
+                setCooldownCount(cooldownCount - 1);
+            }, 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [cooldownCount]);
 
+    const handleRegister = () => {
+        navigation.navigate('Register');
+    };
 
-  const switchPhone = () => {
-    setSelectedOption(0);
-  };
+    const guestLogin = () => {
+        //Alert.alert("Login successful");
+    };
 
-  const switchMail = () => {
-    setSelectedOption(1);
-  };
+    const switchSeePassword = () => {
+        setSeePassword(seePassword ? 0 : 1);
+    };
 
-  const switchSeePassword = () => {
-    {seePassword === 1 ? setseePasword(0) : setseePasword(1)}
-  };
+    useEffect(() => {
+        let timer;
+        if (cooldownCount > 0) {
+            timer = setTimeout(() => {
+                setCooldownCount(cooldownCount - 1);
+            }, 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [cooldownCount]);
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-    <View style={{ flex: 1 }}>
-    <View style={{ flex: 2.25, backgroundColor: "#990000", justifyContent: "flex-end", alignItems: "center", borderBottomColor: "#333333", borderBottomWidth: 1.5 }}>
-        <Image source={ require('../../assets/logo.png') } style={{ width: 175, height: 175 }} />
-      </View>
-      <View style={{ backgroundColor: "#222222", flexDirection: "row", justifyContent: "center", paddingBottom:20 }}>
-        <TouchableOpacity onPress={switchPhone} style={{
-          height: 50,
-          width: "50%",
-          alignItems: "center",
-          justifyContent: "center",
-          borderBottomColor: "red",
-          borderBottomWidth: selectedOption === 0 ? 2 : 0
-        }}>
-          <Text style={{ color: "white" }}>Phone Number</Text>
-        </TouchableOpacity>
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={{flex: 1}}>
+                <View
+                    style={{
+                        flex: 2.25,
+                        backgroundColor: '#990000',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        borderBottomColor: '#333333',
+                        borderBottomWidth: 1.5,
+                    }}>
+                    <Image source={require('../../assets/logo.png')} style={{width: 175, height: 175}} />
+                </View>
+                <View
+                    style={{
+                        backgroundColor: '#222222',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        paddingBottom: 20,
+                    }}>
+                    <TouchableOpacity
+                        onPress={() => setSelectedOption(0)}
+                        style={{
+                            height: 50,
+                            width: '50%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderBottomColor: 'red',
+                            borderBottomWidth: selectedOption === 0 ? 2 : 0,
+                        }}>
+                        <Text style={{color: 'white'}}>Phone Number</Text>
+                    </TouchableOpacity>
 
-        <TouchableOpacity onPress={switchMail} style={{
-          height: 50,
-          width: "50%",
-          alignItems: "center",
-          justifyContent: "center",
-          borderBottomColor: "red",
-          borderBottomWidth: selectedOption === 1 ? 2 : 0
-        }}>
-          <Text style={{ color: "white" }}>E-Mail Address</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{ flex: 5, backgroundColor: "#222222", alignItems: "center", justifyContent: "flex-start" }}>
-        {selectedOption === 0 ? (
-          <LoginInput
-          icon={
-              <Ionicons
-                  name="phone-portrait-outline"
-                  size={20}
-                  color="gray"
-              />
-          }>
-          <TextInput
-            placeholder="Phone Number"
-            placeholderTextColor={"gray"}
-            style={{
-              height: 50,
-              width: "80%",
-              justifyContent: "center",
-              color: "white",
-              paddingLeft: 10,
-            }}
-            value={phone}
-            onChangeText={setPhone}
-          />
-          </LoginInput>
-        ) : (
-          <LoginInput
-          icon={
-              <Ionicons
-                  name="mail"
-                  size={20}
-                  color="gray"
-              />
-          }>
-          <TextInput
-            placeholder="E-Mail Address"
-            placeholderTextColor={"gray"}
-            style={{
-              height: 50,
-              width: "80%",
-              justifyContent: "center",
-              color: "white",
-              paddingLeft: 10,
-            }}
-            value={mail}
-            onChangeText={setMail}
-          />
-          </LoginInput>
-        )}
-          <LoginInput
-          icon={
-              <Ionicons
-                  name="lock-closed"
-                  size={17}
-                  color="gray"
-              />
-          }>
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor={"gray"}
-            style={{
-              height: 50,
-              width: "75%",
-              justifyContent: "center",
-              color: "white",
-              paddingLeft: 10,
-            }}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry= {seePassword === 1 ? true : false}
-        />
-        <TouchableOpacity onPress={switchSeePassword} style={{}}>
-        {seePassword ? (
-                                <TouchableOpacity onPress={() => switchSeePassword()}>
-                                    <Ionicons name="eye-off" size={20} color="red" />
-                                </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity onPress={() => switchSeePassword()}>
-                                    <Ionicons name="eye" size={20} color="red" />
-                                </TouchableOpacity>
-                            )}
-        </TouchableOpacity>
-        </LoginInput>
-        <TouchableOpacity onPress={handleLogin} style={{
-          height: 45,
-          width: "80%",
-          backgroundColor: "#990000",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 5,
-          marginTop:10
-        }}>
-          <Text style={{ color: "white" }}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleRegister} style={{}}>
-          <Text style={{fontSize:17, color:"red", marginTop:20}}>Don"t have an account ? Register</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={guestLogin} style={{}}>
-          <Text style={{color:"lightblue", marginTop:25}}>Continue without Login</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-    </TouchableWithoutFeedback>
-  );
+                    <TouchableOpacity
+                        onPress={() => setSelectedOption(1)}
+                        style={{
+                            height: 50,
+                            width: '50%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderBottomColor: 'red',
+                            borderBottomWidth: selectedOption === 1 ? 2 : 0,
+                        }}>
+                        <Text style={{color: 'white'}}>E-Mail Address</Text>
+                    </TouchableOpacity>
+                </View>
+                <View
+                    style={{
+                        flex: 5,
+                        backgroundColor: '#222222',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                    }}>
+                    {selectedOption === 0 ? (
+                        <LoginInput icon={<Ionicons name="phone-portrait-outline" size={20} color="gray" />}>
+                            <TextInput
+                                placeholder="Phone Number"
+                                placeholderTextColor={'gray'}
+                                style={{
+                                    height: 50,
+                                    width: '80%',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    paddingLeft: 10,
+                                }}
+                                value={phone}
+                                onChangeText={setPhone}
+                            />
+                        </LoginInput>
+                    ) : (
+                        <LoginInput icon={<Ionicons name="mail" size={20} color="gray" />}>
+                            <TextInput
+                                placeholder="E-Mail Address"
+                                placeholderTextColor={'gray'}
+                                style={{
+                                    height: 50,
+                                    width: '80%',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    paddingLeft: 10,
+                                }}
+                                value={mail}
+                                onChangeText={setMail}
+                            />
+                        </LoginInput>
+                    )}
+                    <LoginInput icon={<Ionicons name="lock-closed" size={17} color="gray" />}>
+                        <TextInput
+                            placeholder="Password"
+                            placeholderTextColor={'gray'}
+                            style={{
+                                height: 50,
+                                width: '75%',
+                                justifyContent: 'center',
+                                color: 'white',
+                                paddingLeft: 10,
+                            }}
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={seePassword === 1 ? true : false}
+                        />
+                        <TouchableOpacity onPress={() => switchSeePassword()}>
+                            <Ionicons name={seePassword ? 'eye-off' : 'eye'} size={20} color="red" />
+                        </TouchableOpacity>
+                    </LoginInput>
+
+                    {error ? (
+                        <Text
+                            style={{
+                                fontSize: 17,
+                                color: 'red',
+                                backgroundColor: '#222222',
+                                borderWidth: 1,
+                                borderColor: 'red',
+                                borderRadius: 5,
+                                paddingHorizontal: 10,
+                                paddingVertical: 3,
+                            }}>
+                            {error}
+                        </Text>
+                    ) : null}
+
+                    {cooldownCount > 0 ? (
+                        <Text
+                            style={{
+                                fontSize: 17,
+                                color: 'red',
+                                backgroundColor: '#222222',
+                                borderWidth: 1,
+                                borderColor: 'red',
+                                borderRadius: 5,
+                                paddingHorizontal: 10,
+                                paddingVertical: 3,
+                                marginTop: 5,
+                            }}>
+                            {'Too many wrong attempts! Please wait: ' + cooldownCount + ' seconds'}
+                        </Text>
+                    ) : null}
+
+                    {loginCorrect ? (
+                        <Text
+                            style={{
+                                fontSize: 17,
+                                color: 'green',
+                                backgroundColor: '#222222',
+                                borderWidth: 1,
+                                borderColor: 'green',
+                                borderRadius: 5,
+                                paddingHorizontal: 10,
+                                paddingVertical: 3,
+                                marginTop: 5,
+                            }}>
+                            {'Login succesful! You will be redirected in ' + loginCorrectTimer + ' seconds.'}
+                        </Text>
+                    ) : null}
+
+                    <TouchableOpacity
+                        onPress={cooldownCount === 0 ? handleLogin : null}
+                        style={{
+                            height: 45,
+                            width: '80%',
+                            backgroundColor: cooldownCount === 0 ? '#990000' : '#444444',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 5,
+                            marginTop: 10,
+                        }}>
+                        <Text style={{color: cooldownCount === 0 ? 'white' : '#333'}}>Login</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handleRegister} style={{}}>
+                        <Text style={{fontSize: 17, color: 'lightblue', marginTop: 20}}>
+                            Don"t have an account ? Register
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={guestLogin} style={{}}>
+                        <Text style={{color: '#666666', marginTop: 25}}>Continue without Login</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    );
 }
