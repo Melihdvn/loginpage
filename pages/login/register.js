@@ -4,64 +4,69 @@ import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, Keyboard,
 import { Ionicons } from '@expo/vector-icons';
 import * as EmailValidator from 'email-validator';
 
-const RegisterInput = ({icon = null, children, styles = null, borderNone = null, height = null}) => {
+const RegisterInput = ({ icon, children }) => {
   return (
-      <View
-          style={[
-              {
-                  width: borderNone !== null ? '100%' : '80%',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  borderBottomColor: "red",
-                  borderBottomWidth: 1,
-                  borderColor: borderNone !== null ? border : null,
-                  borderWidth: borderNone !== null ? 1 : 0,
-                  marginBottom: 16,
-                  height: height !== null ? 150 : 54,
-              },
-              styles,
-          ]}>
-          {icon === null ? null : (
-              <View style={{height: '100%', width: 50, justifyContent: 'center', alignItems: 'center'}}>{icon}</View>
-          )}
-          {children}
-      </View>
+    <View
+      style={{
+        width: "80%",
+        alignItems: "center",
+        flexDirection: "row",
+        borderBottomColor: "red",
+        borderBottomWidth: 1,
+        marginBottom: 16,
+        height: 54,
+        backgroundColor: "#242424"
+      }}
+    >
+      {icon && (
+        <View
+          style={{
+            height: "100%",
+            width: 50,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {icon}
+        </View>
+      )}
+      {children}
+    </View>
   );
 };
 
 export default function Register({navigation}) {
-  const [mail, setMail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
+  const [mail, setMail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [seePassword, setseePasword] = useState(1);
-  var setError = useState(['']);
 
   const returnLogin = () => {
-    navigation.navigate('Login');
+    navigation.navigate("Login");
   }
 
   const checkValid = () => {
-    if (setPassword === '') {
-        setError=(['Please enter your password.']);
-        return false;
-    }
-    if (setRepeatPassword === '') {
-        setError=(['Please enter your password again.']);
-        return false;
-    }
-    if (setPassword !== setRepeatPassword) {
-        setError=(['Passwords don\'t match.']);
-        return false;
-    }
-    if (setMail === '') {
-        setError=(['Please enter your e-mail address.']);
-        return false;
-    }
-    if (!EmailValidator.validate(setMail)) {
-        setError=(['Please enter a valid e-mail address.']);
-        return false;
-    }
-    return true;
+    if (mail === "") {
+      Alert.alert("Registration Failed", "Please enter your e-mail address.");
+      return false;
+  }
+    if (password === "") {
+    Alert.alert("Registration Failed", "Please enter your password.");
+    return false;
+  }
+    if (repeatPassword === "") {
+      Alert.alert("Registration Failed", "Please enter your password again.");
+      return false;
+  }
+  else if (password !== repeatPassword) {
+      Alert.alert("Registration Failed", "Passwords don\'t match.");
+      return false;
+  }
+  else if (!EmailValidator.validate(mail)) {
+    Alert.alert("Registration Failed", "Please enter a valid e-mail address.");
+      return false;
+  }
+  return true;
 };
 
   const handleRegister = () => {
@@ -69,12 +74,12 @@ export default function Register({navigation}) {
     valid = checkValid();
 
     if (valid) {
-      Alert.alert('Register successful');
+      Alert.alert("Register successful");
       console.log("User registered: " + mail )
     }
     else
     {
-        console.log("User registered: " + setError )
+        console.log("Registration fail")
     }
   };
 
@@ -93,8 +98,8 @@ export default function Register({navigation}) {
       <Text style={{fontSize: 20, color:"white"}}>Login</Text>
       </TouchableOpacity>
               </View>
-      <View style={{ flex: 1.25, backgroundColor: "#990000", justifyContent: "flex-start", alignItems: "center" }}>
-        <Image source={{ uri: "https://www.hotelbooqi.com/wp-content/uploads/2021/12/128-1280406_view-user-icon-png-user-circle-icon-png-300x300.png" }} style={{ width: 100, height: 100, tintColor: "white" }} />
+      <View style={{ flex: 1.5, backgroundColor: "#990000", justifyContent: "flex-end", alignItems: "center", borderBottomColor: "#333333", borderBottomWidth: 1.5 }}>
+        <Image source={ require('../../assets/logo.png') } style={{ width: 175, height: 175 }} />
       </View>
       <View style={{ backgroundColor: "#222222", flexDirection: "row", paddingBottom:10 }}>
         <View style={{
@@ -146,7 +151,7 @@ export default function Register({navigation}) {
             placeholderTextColor={"gray"}
             style={{
               height: 50,
-              width: "80%",
+              width: "75%",
               justifyContent: "center",
               color: "white",
               paddingLeft: 10,
