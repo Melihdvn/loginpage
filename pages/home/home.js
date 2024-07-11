@@ -1,6 +1,5 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-import {Ionicons} from '@expo/vector-icons';
 
 export default function Home({navigation}) {
     const signOut = () => {
@@ -8,10 +7,6 @@ export default function Home({navigation}) {
             index: 0,
             routes: [{name: 'Login'}],
         });
-    };
-
-    const openProfile = () => {
-        navigation.navigate('Profile');
     };
 
     return (
@@ -30,24 +25,6 @@ export default function Home({navigation}) {
                         marginTop: 10,
                     }}>
                     <Text style={{color: 'white'}}>Sign Out</Text>
-                </TouchableOpacity>
-            </View>
-            <View
-                style={{
-                    flex: 1,
-                    backgroundColor: '#111111',
-                    borderTopWidth: 2,
-                    borderColor: '#333',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    paddingTop: 15,
-                    justifyContent: 'space-evenly',
-                }}>
-                <TouchableOpacity>
-                    <Ionicons name="home" size={35} color="gray" style={{flex: 1}} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={openProfile}>
-                    <Ionicons name="person" size={35} color="gray" style={{flex: 1}} />
                 </TouchableOpacity>
             </View>
         </View>

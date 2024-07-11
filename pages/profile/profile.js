@@ -70,10 +70,6 @@ export default function Home({navigation}) {
 
     const formData = [firstName, lastName, email, phoneNumber, address, city, state, postalCode, country, dob];
 
-    const returnHome = () => {
-        navigation.goBack();
-    };
-
     const handleSubmit = () => {
         formData.forEach((value, index) => {
             if (value === '') {
@@ -86,7 +82,7 @@ export default function Home({navigation}) {
         <View style={{flex: 1, backgroundColor: '#222222'}}>
             <View style={{height: 50}}></View>
             <ScrollView style={{paddingTop: 90}}>
-                <View style={{paddingBottom: 100, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{paddingBottom: 200, alignItems: 'center', justifyContent: 'center'}}>
                     <Text style={{color: 'white', fontSize: 25, marginBottom: 20}}>Profile</Text>
                     <ProfileInput>
                         <TextInput
@@ -264,24 +260,6 @@ export default function Home({navigation}) {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            <View
-                style={{
-                    height: 100,
-                    backgroundColor: '#111111',
-                    borderTopWidth: 2,
-                    borderColor: '#333',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    paddingTop: 15,
-                    justifyContent: 'space-evenly',
-                }}>
-                <TouchableOpacity onPress={() => returnHome(navigation)}>
-                    <Ionicons name="home" size={35} color="gray" style={{flex: 1}} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Ionicons name="person" size={35} color="gray" style={{flex: 1}} />
-                </TouchableOpacity>
-            </View>
         </View>
     );
 }

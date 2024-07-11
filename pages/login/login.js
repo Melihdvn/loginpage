@@ -128,10 +128,7 @@ export default function Login({navigation}) {
     useEffect(() => {
         if (loginCorrectTimer === 0) {
             clearInterval(intervalId);
-            navigation.reset({
-                index: 0,
-                routes: [{name: 'Home'}],
-            });
+            navigation.replace('HomeTabs');
         }
     }, [loginCorrectTimer]);
 
@@ -150,7 +147,7 @@ export default function Login({navigation}) {
     };
 
     const guestLogin = () => {
-        //Alert.alert("Login successful");
+        setLoginCorrect(1);
     };
 
     const switchSeePassword = () => {
@@ -224,6 +221,7 @@ export default function Login({navigation}) {
                     {selectedOption === 0 ? (
                         <LoginInput icon={<Ionicons name="phone-portrait-outline" size={20} color="gray" />}>
                             <TextInput
+                                keyboardType="phone-pad"
                                 placeholder="Phone Number"
                                 placeholderTextColor={'gray'}
                                 style={{

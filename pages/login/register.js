@@ -48,6 +48,7 @@ export default function Register({navigation}) {
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
     const [seePassword, setseePasword] = useState(1);
+    const [error, setError] = useState('');
 
     const returnLogin = () => {
         navigation.goBack();
@@ -55,21 +56,21 @@ export default function Register({navigation}) {
 
     const checkValid = () => {
         if (mail === '') {
-            Alert.alert('Registration Failed', 'Please enter your e-mail address.');
+            setError('Please enter your e-mail address.');
             return false;
         }
         if (password === '') {
-            Alert.alert('Registration Failed', 'Please enter your password.');
+            setError('Please enter your password.');
             return false;
         }
         if (repeatPassword === '') {
-            Alert.alert('Registration Failed', 'Please enter your password again.');
+            setError('Please enter your password again.');
             return false;
         } else if (password !== repeatPassword) {
-            Alert.alert('Registration Failed', "Passwords don't match.");
+            setError("Passwords don't match.");
             return false;
         } else if (!EmailValidator.validate(mail)) {
-            Alert.alert('Registration Failed', 'Please enter a valid e-mail address.');
+            setError('Please enter a valid e-mail address.');
             return false;
         }
         return true;
@@ -79,10 +80,7 @@ export default function Register({navigation}) {
         valid = checkValid();
 
         if (valid) {
-            Alert.alert('Register successful');
-            console.log('User registered: ' + mail);
-        } else {
-            console.log('Registration fail');
+            setError('Register successful');
         }
     };
 
@@ -189,6 +187,23 @@ export default function Register({navigation}) {
                             secureTextEntry={true}
                         />
                     </RegisterInput>
+
+                    {error ? (
+                        <Text
+                            style={{
+                                fontSize: 17,
+                                color: error === 'Register successful' ? 'green' : 'red',
+                                backgroundColor: '#222222',
+                                borderWidth: 1,
+                                borderColor: error === 'Register successful' ? 'green' : 'red',
+                                borderRadius: 5,
+                                paddingHorizontal: 10,
+                                paddingVertical: 3,
+                            }}>
+                            {error}
+                        </Text>
+                    ) : null}
+
                     <TouchableOpacity
                         onPress={handleRegister}
                         style={{
